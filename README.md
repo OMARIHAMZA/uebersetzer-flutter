@@ -2,4 +2,4 @@
 
 Eine Metasuchmaschine basiert auf mehreren bekannten Wörterbücher.
 
-## In Bearbeitung__ 
+## In Bearbeitung ...
