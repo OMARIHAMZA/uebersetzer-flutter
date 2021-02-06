@@ -1,6 +1,6 @@
 # uebersetzer
 
-German Dictionary built with Flutter.
+Eine Metasuchmaschine basiert auf mehreren bekannten Wörterbücher.
 
 ## Getting Started
 
