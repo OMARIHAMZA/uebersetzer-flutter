@@ -1,9 +1,11 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uebersetzer/core/navigation/app_flow.dart';
 import 'package:uebersetzer/core/navigation/bottom_navigation.dart';
+import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 
 import 'core/navigation/tab_navigator.dart';
+import 'injection_container.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -21,22 +23,25 @@ class _HomeScreenState extends State<HomeScreen> {
           .navigatorKey
           .currentState
           .maybePop(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: IndexedStack(
-          index: _currentBarIndex,
-          children: appFlows.map((flow) => TabNavigator(flow: flow)).toList(),
+      child: BlocProvider<SearchBloc>(
+        builder: (context) => sl<SearchBloc>(),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: IndexedStack(
+            index: _currentBarIndex,
+            children: appFlows.map((flow) => TabNavigator(flow: flow)).toList(),
+          ),
+          bottomNavigationBar: AppBottomNavigationBar(
+              currentBarIndex: _currentBarIndex,
+              onTap: (newIndex) => setState(() {
+                    if (_currentBarIndex != newIndex) {
+                      _currentBarIndex = newIndex;
+                    } else {
+                      currentFlow.navigatorKey.currentState
+                          .popUntil((route) => route.isFirst);
+                    }
+                  })),
         ),
-        bottomNavigationBar: AppBottomNavigationBar(
-            currentBarIndex: _currentBarIndex,
-            onTap: (newIndex) => setState(() {
-                  if (_currentBarIndex != newIndex) {
-                    _currentBarIndex = newIndex;
-                  } else {
-                    currentFlow.navigatorKey.currentState
-                        .popUntil((route) => route.isFirst);
-                  }
-                })),
       ),
     );
   }

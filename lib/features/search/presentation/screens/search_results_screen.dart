@@ -5,15 +5,13 @@ import 'package:meta/meta.dart';
 import 'package:uebersetzer/core/utils/constants.dart';
 import 'package:uebersetzer/core/widgets/curved_widget.dart';
 import 'package:uebersetzer/core/widgets/my_app_bar_widget.dart';
-import 'package:uebersetzer/features/search/domain/entites/word.dart';
 import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/search/search_section_widget.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/words_list/words_list_view_widget.dart';
 
-import '../../../../injection_container.dart';
-
 class SearchResultsScreen extends StatefulWidget {
   final String query;
+
   SearchResultsScreen({@required this.query});
 
   @override
@@ -21,61 +19,65 @@ class SearchResultsScreen extends StatefulWidget {
 }
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
+  var appBarTitle;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        mTitle: widget.query,
+        mTitle: appBarTitle ?? widget.query,
         mTextStyle: kNormalAppBarTextStyle,
       ),
       body: _buildBody(context),
     );
   }
 
-  BlocProvider<SearchBloc> _buildBody(BuildContext context) {
-    return BlocProvider(
-      builder: (_) => sl<SearchBloc>(),
-      child: Column(
-        children: [
-          SearchSectionWidget(
-            onSubmitted: (value) => BlocProvider.of(context)
-                .dispatch(GetSearchResults(query: value)),
-          ),
-          CurvedWidget(
-              child: Container(
-            width: double.infinity,
-            child: DefaultTabController(
-                length: 4,
-                child: Column(
-                  children: [
-                    TabBar(
-                      labelColor: Theme.of(context).primaryColor,
-                      unselectedLabelColor: Colors.grey,
-                      isScrollable: true,
-                      tabs: [
-                        Tab(
-                          text: 'Lokale Daten',
-                        ),
-                        Tab(
-                          text: 'Duden',
-                        ),
-                        Tab(
-                          text: 'Linguee',
-                        ),
-                        Tab(
-                          text: 'Verbformen',
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    _blocBuilder(context)
-                  ],
-                )),
-          )),
-        ],
-      ),
+  Widget _buildBody(BuildContext context) {
+    return Column(
+      children: [
+        SearchSectionWidget(
+          onSubmitted: (value) {
+            setState(() {
+              appBarTitle = value;
+            });
+            BlocProvider.of<SearchBloc>(context)
+                .dispatch(GetSearchResults(query: value));
+          },
+        ),
+        CurvedWidget(
+            child: Container(
+          width: double.infinity,
+          child: DefaultTabController(
+              length: 4,
+              child: Column(
+                children: [
+                  TabBar(
+                    labelColor: Theme.of(context).primaryColor,
+                    unselectedLabelColor: Colors.grey,
+                    isScrollable: true,
+                    tabs: [
+                      Tab(
+                        text: 'Lokale Daten',
+                      ),
+                      Tab(
+                        text: 'Duden',
+                      ),
+                      Tab(
+                        text: 'Linguee',
+                      ),
+                      Tab(
+                        text: 'Verbformen',
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _blocBuilder(context)
+                ],
+              )),
+        )),
+      ],
     );
   }
 
@@ -90,9 +92,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         } else if (state is SearchLoading) {
           return CircularProgressIndicator();
         } else if (state is SearchLoaded) {
-          return WordsListView(
-            words: state.words
-          );
+          return WordsListView(words: state.words);
         } else {
           return Text('Unknown behavior!');
         }
