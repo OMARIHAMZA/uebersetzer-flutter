@@ -108,7 +108,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                 context,
                 WordDetailsScreen(word: wordTapped),
               );
-              print(query);
               _dispatchSearchEvent(query, context);
             },
           );

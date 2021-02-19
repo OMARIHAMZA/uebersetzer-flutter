@@ -30,7 +30,6 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
   void initState() {
     word = widget.word;
     favoriteId = word.favoriteId;
-    print('a7a');
     super.initState();
   }
 
@@ -143,7 +142,6 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
   BlocBuilder<FavoritesBloc, FavoritesState> _buildFavoriteButton() {
     return BlocBuilder<FavoritesBloc, FavoritesState>(
       builder: (context, state) {
-        print(state.runtimeType);
         if (state is FavoriteAdded) {
           favoriteId = state.id;
         } else if (state is FavoriteRemoved) {

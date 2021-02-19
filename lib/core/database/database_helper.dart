@@ -183,7 +183,6 @@ class DatabaseHelperImpl implements DatabaseHelper {
     Database db = await instance.database;
     var wordMap = word.toMap();
     wordMap['plural'] = jsonEncode([wordMap['plural']]);
-    print(wordMap);
     final String wordId = word.word + word.type.toTypeString();
     return await db.insert(favoritesTable, {
       favoritesColumnWordId: wordId,

@@ -26,7 +26,6 @@ class FavoritesLocalDataSourceImpl implements FavoritesLocalDataSource {
   @override
   Future<List<WordModel>> getFavorites() async {
     final result = await databaseHelper.getFavorites();
-    print('Favs' + jsonEncode(result));
     if (result == null) return [];
     return WordModel.fromFavoritesJsonList(result);
   }

@@ -22,7 +22,6 @@ class SearchRepositoryImpl implements SearchRepository {
   Future<Either<Failure, List<Word>>> searchForWords(String query) async {
     try {
       final mapFromDatabase = await databaseHelper.performSearchQuery(query);
-      print(jsonEncode(mapFromDatabase));
       final list = WordModel.fromJsonList(mapFromDatabase);
       list.similaritySort(query);
       return Right(list);
