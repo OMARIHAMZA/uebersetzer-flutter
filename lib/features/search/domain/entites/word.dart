@@ -6,16 +6,17 @@ class Word extends Equatable {
   final String plural;
   final List<String> meaning;
   final WordType type;
+  final int favoriteId;
 
-  Word({
-    @required this.word,
-    @required this.plural,
-    @required this.meaning,
-    @required this.type,
-  });
+  Word(
+      {@required this.word,
+      @required this.plural,
+      @required this.meaning,
+      @required this.type,
+      this.favoriteId});
 
   @override
-  List get props => [word, plural, meaning, type];
+  List get props => [word, plural, meaning, type, favoriteId];
 }
 
 enum WordType {
@@ -37,13 +38,3 @@ enum WordType {
   PRONOUN,
   OTHER
 }
-
-extension ParseToString on WordType {
-  String toShortString() {
-    return this
-        .toString()
-        .split('.')
-        .last;
-  }
-}
-

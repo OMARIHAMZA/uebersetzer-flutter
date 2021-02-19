@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uebersetzer/core/errors/exceptions.dart';
+import 'package:uebersetzer/features/search/data/models/word_model.dart';
+import 'package:uebersetzer/core/utils/extensions.dart';
 
 abstract class DatabaseHelper {
   Future<Database> get database;
@@ -25,19 +28,35 @@ abstract class DatabaseHelper {
   Future<int> delete(int id);
 
   Future<List<Map<String, dynamic>>> performSearchQuery(String target);
+
+  /// --- Favorites ---
+
+  Future<int> addFavorite(WordModel word);
+
+  Future<List<Map<String, dynamic>>> getFavorites();
+
+  Future<int> removeFavorite(int id);
+
+  /// ----------------
 }
 
 class DatabaseHelperImpl implements DatabaseHelper {
   static final _databaseName = "dictionary.db";
   static final _databaseVersion = 1;
 
-  static const table = 'local_dictionary';
+  /// Local Dictionary Table
+  static const localDictionaryTable = 'local_dictionary';
+  static const localDictionaryColumnId = '_id';
+  static const localDictionaryColumnWord = 'word';
+  static const localDictionaryColumnPlural = 'plural';
+  static const localDictionaryColumnGender = 'gender';
+  static const localDictionaryColumnMeaning = 'meaning';
 
-  static const columnId = '_id';
-  static const columnWord = 'word';
-  static const columnPlural = 'plural';
-  static const columnGender = 'gender';
-  static const columnMeaning = 'meaning';
+  /// Favorites Table
+  static const favoritesTable = 'favorites';
+  static const favoritesColumnId = 'id';
+  static const favoritesColumnWordId = 'word_id';
+  static const favoritesColumnWord = 'word';
 
   // make this a singleton class
   DatabaseHelperImpl._privateConstructor();
@@ -85,19 +104,17 @@ class DatabaseHelperImpl implements DatabaseHelper {
       }
     } else {}
     // open the database
-    return openDatabase(path, readOnly: true);
+    return openDatabase(path, readOnly: false, onCreate: _onCreate, version: 4);
   }
 
   // SQL code to create the database table
   @override
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-          CREATE TABLE $table (
-            $columnId INTEGER PRIMARY KEY,
-            $columnWord TEXT NOT NULL,
-            $columnGender TEXT NOT NULL,
-            $columnPlural TEXT NOT NULL,
-            $columnMeaning TEXT NOT NULL
+          CREATE TABLE $favoritesTable (
+            $favoritesColumnId INTEGER PRIMARY KEY,
+            $favoritesColumnWordId TEXT UNIQUE NOT NULL,
+            $favoritesColumnWord TEXT NOT NULL
           )
           ''');
   }
@@ -115,7 +132,7 @@ class DatabaseHelperImpl implements DatabaseHelper {
   @override
   Future<int> insert(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    return await db.insert(table, row);
+    return await db.insert(localDictionaryTable, row);
   }
 
   // All of the rows are returned as a list of maps, where each map is
@@ -123,7 +140,7 @@ class DatabaseHelperImpl implements DatabaseHelper {
   @override
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.database;
-    return await db.query(table);
+    return await db.query(localDictionaryTable);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
@@ -132,7 +149,7 @@ class DatabaseHelperImpl implements DatabaseHelper {
   Future<int> queryRowCount() async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM $table'));
+        await db.rawQuery('SELECT COUNT(*) FROM $localDictionaryTable'));
   }
 
   // We are assuming here that the id column in the map is set. The other
@@ -140,8 +157,9 @@ class DatabaseHelperImpl implements DatabaseHelper {
   @override
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    int id = row[columnId];
-    return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
+    int id = row[localDictionaryColumnId];
+    return await db.update(localDictionaryTable, row,
+        where: '$localDictionaryColumnId = ?', whereArgs: [id]);
   }
 
   // Deletes the row specified by the id. The number of affected rows is
@@ -149,13 +167,41 @@ class DatabaseHelperImpl implements DatabaseHelper {
   @override
   Future<int> delete(int id) async {
     Database db = await instance.database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    return await db.delete(localDictionaryTable,
+        where: '$localDictionaryColumnId = ?', whereArgs: [id]);
   }
 
   @override
   Future<List<Map<String, dynamic>>> performSearchQuery(String target) async {
     return rawQuery(
-      'SELECT * FROM $table WHERE `word` like \'%${target.replaceAll(' ', '%')}\';',
+      'SELECT $localDictionaryTable.*, $favoritesTable.$favoritesColumnId as fav_id, $localDictionaryTable.$localDictionaryColumnWord || $localDictionaryTable.$localDictionaryColumnGender as mWordId FROM $localDictionaryTable LEFT JOIN $favoritesTable ON $favoritesTable.`$favoritesColumnWordId` = mWordId WHERE $localDictionaryTable.`word` like \'%${target.replaceAll(' ', '%')}\';',
     );
+  }
+
+  @override
+  Future<int> addFavorite(WordModel word) async {
+    Database db = await instance.database;
+    var wordMap = word.toMap();
+    wordMap['plural'] = jsonEncode([wordMap['plural']]);
+    print(wordMap);
+    final String wordId = word.word + word.type.toTypeString();
+    return await db.insert(favoritesTable, {
+      favoritesColumnWordId: wordId,
+      favoritesColumnWord: jsonEncode(wordMap)
+    });
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getFavorites() async {
+    return await rawQuery(
+      'SELECT * FROM $favoritesTable;',
+    );
+  }
+
+  @override
+  Future<int> removeFavorite(int id) async {
+    Database db = await instance.database;
+    return await db.delete(favoritesTable,
+        where: '$favoritesColumnId = ?', whereArgs: [id]);
   }
 }

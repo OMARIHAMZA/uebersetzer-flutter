@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uebersetzer/core/utils/utils.dart';
-import 'package:uebersetzer/core/widgets/curved_widget.dart';
+import 'package:uebersetzer/core/widgets/top_curved_widget.dart';
 import 'package:uebersetzer/core/widgets/my_app_bar_widget.dart';
 import 'package:uebersetzer/features/search/presentation/screens/search_results_screen.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/history_section.dart';
@@ -22,7 +22,7 @@ class SearchScreen extends StatelessWidget {
       children: [
         _buildSearchSection(context),
         // Body
-        CurvedWidget(
+        TopCurvedWidget(
           child: Column(
             children: [
               // History Section

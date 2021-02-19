@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:uebersetzer/core/database/database_helper.dart';
 import 'package:uebersetzer/core/errors/exceptions.dart';
@@ -20,6 +22,7 @@ class SearchRepositoryImpl implements SearchRepository {
   Future<Either<Failure, List<Word>>> searchForWords(String query) async {
     try {
       final mapFromDatabase = await databaseHelper.performSearchQuery(query);
+      print(jsonEncode(mapFromDatabase));
       final list = WordModel.fromJsonList(mapFromDatabase);
       list.similaritySort(query);
       return Right(list);

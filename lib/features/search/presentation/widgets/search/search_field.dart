@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
-import 'file:///D:/Documents/FlutterProjects/uebersetzer/lib/features/search/presentation/widgets/search/special_character_button.dart';
-import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
+
+import 'special_character_button.dart';
 
 class SearchField extends StatefulWidget {
   final ValueChanged<String> onSubmitted;
@@ -13,7 +12,8 @@ class SearchField extends StatefulWidget {
   _SearchFieldState createState() => _SearchFieldState();
 }
 
-class _SearchFieldState extends State<SearchField> {
+class _SearchFieldState extends State<SearchField>
+    with SingleTickerProviderStateMixin {
   final controller = TextEditingController();
   var isSearching = false;
 
@@ -39,15 +39,22 @@ class _SearchFieldState extends State<SearchField> {
             setState(() {
               isSearching = false;
             });
+            if (value.isEmpty) {
+              return;
+            }
             controller.clear();
             widget.onSubmitted(value);
           },
         ),
-        Visibility(
-          visible: isSearching ? true : false,
-          child: SpecialCharactersControls(
-            controller: controller,
-            chars: ['ä', 'ö', 'ü', 'ß'],
+        AnimatedSize(
+          vsync: this,
+          duration: Duration(milliseconds: 250),
+          child: Container(
+            height: isSearching ? null : 0.0,
+            child: SpecialCharactersControls(
+              controller: controller,
+              chars: ['ä', 'ö', 'ü', 'ß'],
+            ),
           ),
         )
       ],

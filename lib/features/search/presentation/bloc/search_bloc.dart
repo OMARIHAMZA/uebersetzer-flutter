@@ -32,7 +32,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
       yield resultEither.fold(
         (failure) => SearchError(message: _getErrorMessage(failure)),
-        (words) => SearchLoaded(words: words),
+        (words) => words.isEmpty ? SearchEmpty() : SearchLoaded(words: words),
       );
     }
   }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-class CurvedWidget extends StatelessWidget {
+class TopCurvedWidget extends StatelessWidget {
   final Widget child;
 
-  CurvedWidget({@required this.child});
+  TopCurvedWidget({@required this.child});
 
   @override
   Widget build(BuildContext context) {

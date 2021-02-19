@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uebersetzer/core/navigation/app_flow.dart';
 import 'package:uebersetzer/core/navigation/bottom_navigation.dart';
+import 'package:uebersetzer/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 
 import 'core/navigation/tab_navigator.dart';
@@ -23,8 +24,11 @@ class _HomeScreenState extends State<HomeScreen> {
           .navigatorKey
           .currentState
           .maybePop(),
-      child: BlocProvider<SearchBloc>(
-        builder: (context) => sl<SearchBloc>(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<SearchBloc>(builder: (context) => sl<SearchBloc>()),
+          BlocProvider<FavoritesBloc>(builder: (context) => sl<FavoritesBloc>()),
+        ],
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: IndexedStack(

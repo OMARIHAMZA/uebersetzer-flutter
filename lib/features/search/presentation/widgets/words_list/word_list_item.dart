@@ -6,8 +6,9 @@ import 'package:uebersetzer/core/utils/extensions.dart';
 
 class WordsListItem extends StatelessWidget {
   final Word word;
+  final ValueChanged<Word> onTap;
 
-  WordsListItem({@required this.word});
+  WordsListItem({@required this.word, @required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,11 @@ class WordsListItem extends StatelessWidget {
     }
     return ListTile(
       title: Text(word.beautify()),
-      subtitle: Text(subtitle),
+      subtitle: Text(
+        subtitle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       leading: Visibility(
         visible: word.type == WordType.FEMININE ||
             word.type == WordType.MASCULINE ||
@@ -38,7 +43,7 @@ class WordsListItem extends StatelessWidget {
         ),
       ),
       trailing: Icon(Icons.chevron_right),
-      onTap: () {},
+      onTap: () => onTap(word),
     );
   }
 
