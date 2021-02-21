@@ -7,11 +7,14 @@ final GlobalKey bottomGlobalKey = GlobalKey();
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentBarIndex;
   final ValueChanged<int> onTap;
+  final List<AppFlow> appFlows;
 
   AppBottomNavigationBar({
+    @required this.appFlows,
     @required this.currentBarIndex,
     @required this.onTap,
   });
+
 
   @override
   Widget build(BuildContext context) {

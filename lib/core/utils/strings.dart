@@ -1,1 +1,0 @@
-const WORD_COPIED = 'Datei wurde kopiert';

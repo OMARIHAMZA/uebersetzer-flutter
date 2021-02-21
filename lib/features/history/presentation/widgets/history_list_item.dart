@@ -24,7 +24,7 @@ class HistoryListItem extends StatelessWidget {
           color: Colors.grey[600],
         ),
         trailing: Icon(
-          Icons.keyboard_arrow_right,
+          Icons.chevron_right,
           color: Colors.grey[600],
         ),
         onTap: () {

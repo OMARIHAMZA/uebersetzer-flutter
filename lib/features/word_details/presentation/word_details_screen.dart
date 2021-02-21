@@ -10,6 +10,7 @@ import 'package:uebersetzer/core/widgets/top_curved_widget.dart';
 import 'package:uebersetzer/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:uebersetzer/features/search/domain/entites/word.dart';
 import 'package:uebersetzer/core/utils/extensions.dart';
+import 'package:uebersetzer/main.dart';
 
 import 'widgets/word_action_button.dart';
 
@@ -37,6 +38,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
+        context: context,
         mTitle: '',
       ),
       body: Column(
@@ -67,7 +69,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   WordActionButton(
-                    title: 'Hören',
+                    title: getL10nInstance(context).listen,
                     iconData: Icons.volume_up,
                   ),
                   SizedBox(
@@ -78,7 +80,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
                     width: 10.0,
                   ),
                   WordActionButton(
-                    title: 'Kopieren',
+                    title: getL10nInstance(context).copy,
                     iconData: Icons.copy,
                     onPressed: () {
                       Clipboard.setData(
@@ -100,7 +102,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
                   padding: const EdgeInsets.only(
                       top: 15.0, left: 15.0, right: 15.0, bottom: 5.0),
                   child: Text(
-                    'Bedeutungen'.toUpperCase(),
+                    getL10nInstance(context).meanings.toUpperCase(),
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontSize: 20.0,
@@ -126,7 +128,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Copyright (c) Frank Richter <frank.richter@hrz.tu-chemnitz.de> 1995-2020',
+                    getL10nInstance(context).localDataCopyRights,
                     style:
                         TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0),
                   ),
@@ -148,7 +150,7 @@ class _WordDetailsScreenState extends State<WordDetailsScreen> {
           favoriteId = 0;
         }
         return WordActionButton(
-          title: favoriteId == 0 ? 'Speichern' : 'Löschen',
+          title: favoriteId == 0 ? getL10nInstance(context).save : getL10nInstance(context).remove,
           iconData:
               favoriteId == 0 ? Icons.star_border : Icons.star_outlined,
           onPressed: () {

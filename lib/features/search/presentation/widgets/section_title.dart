@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uebersetzer/core/widgets/app_icon.dart';
 import 'package:meta/meta.dart';
+import 'package:uebersetzer/main.dart';
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -46,13 +47,13 @@ class SectionTitle extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'Alle anzeigen'.toUpperCase(),
+                        getL10nInstance(context).showAll.toUpperCase(),
                         style: TextStyle(
                           color: Colors.grey[800],
                         ),
                       ),
                       AppIcon(
-                        iconData: Icons.keyboard_arrow_right,
+                        iconData: Icons.chevron_right,
                         color: Colors.grey[800],
                       )
                     ],

@@ -6,6 +6,7 @@ import 'package:uebersetzer/features/favorites/presentation/bloc/favorites_bloc.
 import 'package:uebersetzer/features/search/presentation/widgets/section_title.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/words_list/word_list_item.dart';
 import 'package:uebersetzer/features/word_details/presentation/word_details_screen.dart';
+import 'package:uebersetzer/main.dart';
 
 class FavoritesSection extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _FavoritesSectionState extends State<FavoritesSection> {
     return Column(
       children: [
         SectionTitle(
-            title: 'Gespeicherte Wörter',
+            title: getL10nInstance(context).savedWords,
             iconData: Icons.star,
             onPressed: () {
               BottomNavigationBar bottomNavBar = bottomGlobalKey.currentWidget;

@@ -4,6 +4,7 @@ import 'package:uebersetzer/core/navigation/bottom_navigation.dart';
 import 'package:uebersetzer/features/history/presentation/bloc/search_history_bloc.dart';
 import 'package:uebersetzer/features/history/presentation/widgets/history_list_item.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/section_title.dart';
+import 'package:uebersetzer/main.dart';
 
 class HistorySection extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class _HistorySectionState extends State<HistorySection> {
     return Column(
       children: [
         SectionTitle(
-          title: 'Suchverlauf',
+          title: getL10nInstance(context).history,
           iconData: Icons.access_time_sharp,
           onPressed: () {
             BottomNavigationBar bottomNavBar = bottomGlobalKey.currentWidget;

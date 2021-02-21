@@ -22,25 +22,3 @@ class AppFlow {
       @required this.screenId});
 }
 
-final List<AppFlow> appFlows = [
-  AppFlow(
-      title: 'Search',
-      iconData: Icons.home_outlined,
-      navigatorKey: GlobalKey<NavigatorState>(),
-      screenId: ScreenId.SEARCH_SCREEN),
-  AppFlow(
-      title: 'Gespeichert',
-      iconData: Icons.star_border_outlined,
-      navigatorKey: GlobalKey<NavigatorState>(),
-      screenId: ScreenId.FAVORITES_SCREEN),
-  AppFlow(
-      title: 'Verlauf',
-      iconData: Icons.history,
-      navigatorKey: GlobalKey<NavigatorState>(),
-      screenId: ScreenId.HISTORY_SCREEN),
-  AppFlow(
-      title: 'Einst.',
-      iconData: Icons.settings,
-      navigatorKey: GlobalKey<NavigatorState>(),
-      screenId: ScreenId.SETTINGS_SCREEN),
-];

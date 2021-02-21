@@ -11,6 +11,7 @@ import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/search/search_section_widget.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/words_list/words_list_view_widget.dart';
 import 'package:uebersetzer/features/word_details/presentation/word_details_screen.dart';
+import 'package:uebersetzer/main.dart';
 
 class SearchResultsScreen extends StatefulWidget {
   final String query;
@@ -36,6 +37,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
+        context: context,
         mTitle: appBarTitle ?? query,
         mTextStyle: kNormalAppBarTextStyle,
       ),
@@ -73,16 +75,16 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     isScrollable: true,
                     tabs: [
                       Tab(
-                        text: 'Lokale Daten',
+                        text: getL10nInstance(context).localData,
                       ),
                       Tab(
-                        text: 'Duden',
+                        text: getL10nInstance(context).duden,
                       ),
                       Tab(
-                        text: 'Linguee',
+                        text: getL10nInstance(context).linguee,
                       ),
                       Tab(
-                        text: 'Verbformen',
+                        text: getL10nInstance(context).verbformen,
                       ),
                     ],
                   ),
@@ -127,8 +129,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     // Dispatch Search Event
     BlocProvider.of<SearchBloc>(context)
         .dispatch(GetSearchResults(query: query));
-
-
   }
 
   @override

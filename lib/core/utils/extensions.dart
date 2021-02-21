@@ -24,13 +24,13 @@ extension WordBeautify on Word {
   String beautify() {
     switch (this.type) {
       case WordType.FEMININE:
-        return 'e, ${this.word} ${this.plural != null ? ',' + this.plural : ''}';
+        return 'e, ${this.word} ${this.plural != null ? ', ' + this.plural : ''}';
 
       case WordType.MASCULINE:
-        return 'r, ${this.word} ${this.plural != null ? ',' + this.plural : ''}';
+        return 'r, ${this.word} ${this.plural != null ? ', ' + this.plural : ''}';
 
       case WordType.NEUTER:
-        return 's, ${this.word} ${this.plural != null ? ',' + this.plural : ''}';
+        return 's, ${this.word} ${this.plural != null ? ', ' + this.plural : ''}';
 
       default:
         return '${this.word} ${this.type != WordType.OTHER ? '(' + this.type.toShortString().toLowerCase() + ')' : ''}';

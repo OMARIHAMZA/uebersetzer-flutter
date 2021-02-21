@@ -5,7 +5,6 @@ import 'package:uebersetzer/core/utils/utils.dart';
 import 'package:uebersetzer/core/widgets/top_curved_widget.dart';
 import 'package:uebersetzer/core/widgets/my_app_bar_widget.dart';
 import 'package:uebersetzer/features/history/presentation/bloc/search_history_bloc.dart';
-import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/screens/search_results_screen.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/favorites_section.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/history_section.dart';
@@ -16,7 +15,7 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: MyAppBar(),
+      appBar: MyAppBar(context: context,),
       body: buildBody(context),
     );
   }
@@ -55,10 +54,5 @@ class SearchScreen extends StatelessWidget {
       BlocProvider.of<SearchHistoryBloc>(context)
           .dispatch(AddSearchRecordEvent(query: value));
     });
-  }
-
-  void _showSnackBar(BuildContext context) {
-    Scaffold.of(context)
-        .showSnackBar(SnackBar(content: Text('in Bearbeitung')));
   }
 }

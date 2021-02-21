@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:uebersetzer/main.dart';
 
 import 'special_character_button.dart';
 
@@ -69,7 +70,7 @@ class _SearchFieldState extends State<SearchField>
         ),
         filled: true,
         fillColor: Colors.white,
-        hintText: 'Stichwort...',
+        hintText: getL10nInstance(context).keyword,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(
           Radius.circular(50.0),

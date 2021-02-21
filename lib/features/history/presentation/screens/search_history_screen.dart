@@ -6,6 +6,7 @@ import 'package:uebersetzer/core/widgets/top_curved_widget.dart';
 import 'package:uebersetzer/features/history/presentation/bloc/search_history_bloc.dart';
 import 'package:uebersetzer/features/history/presentation/widgets/history_list_item.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/search/search_field.dart';
+import 'package:uebersetzer/main.dart';
 
 class SearchHistoryScreen extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: MyAppBar(context: context,),
       body: Column(
         children: [
           BottomCurvedWidget(
@@ -66,7 +67,7 @@ class _SearchHistoryScreenState extends State<SearchHistoryScreen> {
         } else if (state is SearchHistoryLoaded) {
           return _buildHistoryListView(state);
         } else if (state is SearchHistoryEmpty) {
-          return Text('Start a search!');
+          return Text(getL10nInstance(context).noSearchHistory);
         } else if (state is SearchHistoryError) {
           return Text(state.message);
         }

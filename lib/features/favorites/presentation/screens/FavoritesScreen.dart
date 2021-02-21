@@ -8,6 +8,7 @@ import 'package:uebersetzer/features/favorites/presentation/bloc/favorites_bloc.
 import 'package:uebersetzer/features/search/presentation/widgets/search/search_field.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/words_list/word_list_item.dart';
 import 'package:uebersetzer/features/word_details/presentation/word_details_screen.dart';
+import 'package:uebersetzer/main.dart';
 
 class FavoritesScreen extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: MyAppBar(context: context,),
       body: Column(
         children: [
           BottomCurvedWidget(
@@ -81,7 +82,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ),
         );
       } else if (state is FavoritesEmpty) {
-        return Text('Nothing is here yet');
+        return Text(getL10nInstance(context).noData);
       } else if (state is FavoriteAdded) {
         _dispatchGetFavorites();
       } else if (state is FavoriteRemoved) {
