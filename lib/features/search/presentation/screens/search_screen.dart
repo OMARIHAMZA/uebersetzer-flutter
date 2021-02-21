@@ -1,17 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uebersetzer/core/utils/utils.dart';
 import 'package:uebersetzer/core/widgets/top_curved_widget.dart';
 import 'package:uebersetzer/core/widgets/my_app_bar_widget.dart';
+import 'package:uebersetzer/features/history/presentation/bloc/search_history_bloc.dart';
+import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/screens/search_results_screen.dart';
+import 'package:uebersetzer/features/search/presentation/widgets/favorites_section.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/history_section.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/search/search_section_widget.dart';
-import 'package:uebersetzer/features/search/presentation/widgets/section_title.dart';
 
 class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: MyAppBar(),
       body: buildBody(context),
     );
@@ -23,18 +27,18 @@ class SearchScreen extends StatelessWidget {
         _buildSearchSection(context),
         // Body
         TopCurvedWidget(
-          child: Column(
-            children: [
-              // History Section
-              HistorySection(),
-              // Saved Words Section
-              SectionTitle(
-                  title: 'Gespeicherte Wörter',
-                  iconData: Icons.star,
-                  onPressed: () {
-                    _showSnackBar(context);
-                  }),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // History Section
+                HistorySection(),
+                // Saved Words Section
+                FavoritesSection(),
+                SizedBox(
+                  height: 25,
+                )
+              ],
+            ),
           ),
         ),
       ],
@@ -47,6 +51,9 @@ class SearchScreen extends StatelessWidget {
         context,
         SearchResultsScreen(query: value),
       );
+      // Save the query in the db
+      BlocProvider.of<SearchHistoryBloc>(context)
+          .dispatch(AddSearchRecordEvent(query: value));
     });
   }
 

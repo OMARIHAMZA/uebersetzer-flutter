@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:uebersetzer/core/errors/exceptions.dart';
 import 'package:uebersetzer/features/search/data/models/word_model.dart';
 import 'package:uebersetzer/core/utils/extensions.dart';
+import 'package:meta/meta.dart';
 
 abstract class DatabaseHelper {
   Future<Database> get database;
@@ -17,16 +18,26 @@ abstract class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> rawQuery(String query);
 
-  Future<int> insert(Map<String, dynamic> row);
+  Future<int> insert(Map<String, dynamic> row, String tableName);
 
-  Future<List<Map<String, dynamic>>> queryAllRows();
+  Future<List<Map<String, dynamic>>> queryAllRows(String tableName);
 
-  Future<int> queryRowCount();
+  Future<int> queryRowCount(String tableName);
 
-  Future<int> update(Map<String, dynamic> row);
+  Future<int> update(Map<String, dynamic> row, String tableName);
 
-  Future<int> delete(int id);
+  Future<int> delete(int id, String tableName);
 
+  Future<int> deleteByValue({
+    @required String columnName,
+    @required String columnValue,
+    @required String tableName,
+  });
+
+  Future<void> clearTable(String table);
+
+  /// Search
+  ///
   Future<List<Map<String, dynamic>>> performSearchQuery(String target);
 
   /// --- Favorites ---
@@ -44,9 +55,10 @@ class DatabaseHelperImpl implements DatabaseHelper {
   static final _databaseName = "dictionary.db";
   static final _databaseVersion = 1;
 
+  static const commonColumnId = '_id';
+
   /// Local Dictionary Table
   static const localDictionaryTable = 'local_dictionary';
-  static const localDictionaryColumnId = '_id';
   static const localDictionaryColumnWord = 'word';
   static const localDictionaryColumnPlural = 'plural';
   static const localDictionaryColumnGender = 'gender';
@@ -54,9 +66,12 @@ class DatabaseHelperImpl implements DatabaseHelper {
 
   /// Favorites Table
   static const favoritesTable = 'favorites';
-  static const favoritesColumnId = 'id';
   static const favoritesColumnWordId = 'word_id';
   static const favoritesColumnWord = 'word';
+
+  /// SearchHistory Table
+  static const historyTable = 'search_history';
+  static const historyColumnQuery = 'query';
 
   // make this a singleton class
   DatabaseHelperImpl._privateConstructor();
@@ -104,17 +119,25 @@ class DatabaseHelperImpl implements DatabaseHelper {
       }
     } else {}
     // open the database
-    return openDatabase(path, readOnly: false, onCreate: _onCreate, version: 4);
+    return openDatabase(path,
+        readOnly: false, onCreate: _onCreate, version: _databaseVersion);
   }
 
-  // SQL code to create the database table
+  // SQL code to create the database tables
   @override
   Future _onCreate(Database db, int version) async {
     await db.execute('''
           CREATE TABLE $favoritesTable (
-            $favoritesColumnId INTEGER PRIMARY KEY,
+            $commonColumnId INTEGER PRIMARY KEY,
             $favoritesColumnWordId TEXT UNIQUE NOT NULL,
             $favoritesColumnWord TEXT NOT NULL
+          )
+          ''');
+
+    await db.execute('''
+          CREATE TABLE $historyTable (
+            $commonColumnId INTEGER PRIMARY KEY,
+            $historyColumnQuery TEXT NOT NULL
           )
           ''');
   }
@@ -130,51 +153,68 @@ class DatabaseHelperImpl implements DatabaseHelper {
   // and the value is the column value. The return value is the id of the
   // inserted row.
   @override
-  Future<int> insert(Map<String, dynamic> row) async {
+  Future<int> insert(Map<String, dynamic> row, String tableName) async {
     Database db = await instance.database;
-    return await db.insert(localDictionaryTable, row);
+    return await db.insert(tableName, row);
   }
 
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
   @override
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
+  Future<List<Map<String, dynamic>>> queryAllRows(String tableName) async {
     Database db = await instance.database;
-    return await db.query(localDictionaryTable);
+    return await db.query(tableName);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
   @override
-  Future<int> queryRowCount() async {
+  Future<int> queryRowCount(String tableName) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM $localDictionaryTable'));
+        await db.rawQuery('SELECT COUNT(*) FROM $tableName'));
   }
 
   // We are assuming here that the id column in the map is set. The other
   // column values will be used to update the row.
   @override
-  Future<int> update(Map<String, dynamic> row) async {
+  Future<int> update(Map<String, dynamic> row, String tableName) async {
     Database db = await instance.database;
-    int id = row[localDictionaryColumnId];
-    return await db.update(localDictionaryTable, row,
-        where: '$localDictionaryColumnId = ?', whereArgs: [id]);
+    int id = row[commonColumnId];
+    return await db
+        .update(tableName, row, where: '$commonColumnId = ?', whereArgs: [id]);
   }
 
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
   @override
-  Future<int> delete(int id) async {
+  Future<int> delete(int id, String tableName) async {
     Database db = await instance.database;
-    return await db.delete(localDictionaryTable,
-        where: '$localDictionaryColumnId = ?', whereArgs: [id]);
+    return await db
+        .delete(tableName, where: '$commonColumnId = ?', whereArgs: [id]);
+  }
+
+  @override
+  Future<int> deleteByValue({
+    @required String columnName,
+    @required String columnValue,
+    @required String tableName,
+  }) async {
+    Database db = await instance.database;
+    return await db
+        .delete(tableName, where: '$columnName = ?', whereArgs: [columnValue]);
+  }
+
+  @override
+  Future<void> clearTable(String table) async {
+    Database db = await instance.database;
+    return await db.delete(table);
   }
 
   @override
   Future<List<Map<String, dynamic>>> performSearchQuery(String target) async {
     return rawQuery(
-      'SELECT $localDictionaryTable.*, $favoritesTable.$favoritesColumnId as fav_id, $localDictionaryTable.$localDictionaryColumnWord || $localDictionaryTable.$localDictionaryColumnGender as mWordId FROM $localDictionaryTable LEFT JOIN $favoritesTable ON $favoritesTable.`$favoritesColumnWordId` = mWordId WHERE $localDictionaryTable.`word` like \'%${target.replaceAll(' ', '%')}\';',
+      'SELECT $localDictionaryTable.*, $favoritesTable.$commonColumnId as fav_id, $localDictionaryTable.$localDictionaryColumnWord || $localDictionaryTable.$localDictionaryColumnGender as mWordId FROM $localDictionaryTable LEFT JOIN $favoritesTable ON $favoritesTable.`$favoritesColumnWordId` = mWordId WHERE $localDictionaryTable.`word` like \'%${target.replaceAll(' ', '%')}\';',
     );
   }
 
@@ -200,7 +240,7 @@ class DatabaseHelperImpl implements DatabaseHelper {
   @override
   Future<int> removeFavorite(int id) async {
     Database db = await instance.database;
-    return await db.delete(favoritesTable,
-        where: '$favoritesColumnId = ?', whereArgs: [id]);
+    return await db
+        .delete(favoritesTable, where: '$commonColumnId = ?', whereArgs: [id]);
   }
 }

@@ -9,6 +9,14 @@ import 'package:uebersetzer/features/favorites/domain/usecases/add_favorite_usec
 import 'package:uebersetzer/features/favorites/domain/usecases/get_favorites_usecase.dart';
 import 'package:uebersetzer/features/favorites/domain/usecases/remove_favorite_usecase.dart';
 import 'package:uebersetzer/features/favorites/presentation/bloc/favorites_bloc.dart';
+import 'package:uebersetzer/features/history/data/datasources/history_local_datasource.dart';
+import 'package:uebersetzer/features/history/data/repositories/search_history_repository_impl.dart';
+import 'package:uebersetzer/features/history/domain/repositories/search_history_repository.dart';
+import 'package:uebersetzer/features/history/domain/usecases/add_search_record_usecase.dart';
+import 'package:uebersetzer/features/history/domain/usecases/clear_search_history_usecase.dart';
+import 'package:uebersetzer/features/history/domain/usecases/delete_search_record_usecase.dart';
+import 'package:uebersetzer/features/history/domain/usecases/get_search_history_usecase.dart';
+import 'package:uebersetzer/features/history/presentation/bloc/search_history_bloc.dart';
 import 'package:uebersetzer/features/search/data/datasources/search_local_data_source.dart';
 import 'package:uebersetzer/features/search/data/repositories/search_repository_impl.dart';
 import 'package:uebersetzer/features/search/domain/repositories/search_repository.dart';
@@ -27,6 +35,10 @@ void init() {
   /// 2 - Favorites
   ///
   favoritesFeature();
+
+  /// 3 - Search History
+  ///
+  historyFeature();
 }
 
 void searchFeature() {
@@ -69,4 +81,29 @@ void favoritesFeature() {
   // DataSources
   sl.registerLazySingleton<FavoritesLocalDataSource>(
       () => FavoritesLocalDataSourceImpl(databaseHelper: sl()));
+}
+
+void historyFeature() {
+  // Features - History
+  sl.registerFactory(
+    () => SearchHistoryBloc(
+        getSearchHistoryUseCase: sl(),
+        addSearchRecordUseCase: sl(),
+        deleteSearchRecordUseCase: sl(),
+        clearSearchHistoryUseCase: sl()),
+  );
+
+  // UseCases
+  sl.registerLazySingleton(() => GetSearchHistoryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => AddSearchRecordUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteSearchRecordUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ClearSearchHistoryUseCase(repository: sl()));
+
+  // Repositories
+  sl.registerLazySingleton<SearchHistoryRepository>(
+      () => SearchHistoryRepositoryImpl(localDataSource: sl()));
+
+  // DataSources
+  sl.registerLazySingleton<HistoryLocalDataSource>(
+      () => HistoryLocalDataSourceImpl(databaseHelper: sl()));
 }

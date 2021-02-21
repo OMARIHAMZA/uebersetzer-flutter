@@ -6,6 +6,7 @@ import 'package:uebersetzer/core/utils/constants.dart';
 import 'package:uebersetzer/core/utils/utils.dart';
 import 'package:uebersetzer/core/widgets/top_curved_widget.dart';
 import 'package:uebersetzer/core/widgets/my_app_bar_widget.dart';
+import 'package:uebersetzer/features/history/presentation/bloc/search_history_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/bloc/search_bloc.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/search/search_section_widget.dart';
 import 'package:uebersetzer/features/search/presentation/widgets/words_list/words_list_view_widget.dart';
@@ -53,6 +54,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             });
             BlocProvider.of<SearchBloc>(context)
                 .dispatch(GetSearchResults(query: value));
+
+            // Add the search query to the history table
+            BlocProvider.of<SearchHistoryBloc>(context)
+                .dispatch(AddSearchRecordEvent(query: query));
           },
         ),
         TopCurvedWidget(
@@ -119,8 +124,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   void _dispatchSearchEvent(String query, BuildContext context) {
+    // Dispatch Search Event
     BlocProvider.of<SearchBloc>(context)
         .dispatch(GetSearchResults(query: query));
+
+
   }
 
   @override

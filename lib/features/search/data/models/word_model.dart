@@ -73,7 +73,7 @@ class WordModel extends Word {
     List<WordModel> result = [];
     for (var currentFav in jsons) {
       var currentWord = jsonDecode(currentFav['word']);
-      currentWord['fav_id'] = currentFav[DatabaseHelperImpl.favoritesColumnId];
+      currentWord['fav_id'] = currentFav[DatabaseHelperImpl.commonColumnId];
       result.add(WordModel.fromJson(currentWord));
     }
     return result;

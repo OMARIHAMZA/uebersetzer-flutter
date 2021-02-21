@@ -19,6 +19,7 @@ class TopCurvedWidget extends StatelessWidget {
           ),
         ),
         child: Container(
+          width: double.infinity,
           decoration: BoxDecoration(
             color: Theme.of(context).canvasColor,
             borderRadius: BorderRadius.only(topRight: const Radius.circular(30)),

@@ -1,9 +1,7 @@
-import 'dart:convert';
 
 import 'package:uebersetzer/core/database/database_helper.dart';
 import 'package:uebersetzer/features/search/data/models/word_model.dart';
 import 'package:meta/meta.dart';
-import 'package:uebersetzer/features/search/domain/entites/word.dart';
 
 abstract class FavoritesLocalDataSource {
   /// Fetches favorite words from the local database

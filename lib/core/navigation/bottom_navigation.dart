@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'app_flow.dart';
 
+final GlobalKey bottomGlobalKey = GlobalKey();
+
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentBarIndex;
   final ValueChanged<int> onTap;
@@ -14,6 +16,7 @@ class AppBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      key: bottomGlobalKey,
       type: BottomNavigationBarType.fixed,
       currentIndex: currentBarIndex,
       items: appFlows
